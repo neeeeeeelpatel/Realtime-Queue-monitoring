@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automated Queue Monitoring System — Project Explanation</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface2: #334155;
+      --border: #475569;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent2: #8b5cf6;
+      --cyan: #06b6d4;
+      --green: #34d399;
+      --red: #f87171;
+      --yellow: #fbbf24;
+      --orange: #fb923c;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+      background: linear-gradient(180deg, #1a1e3a 0%, var(--bg) 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 {
+      font-size: 2.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--accent), var(--accent2), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── Section ── */
+    section {
+      padding: 3.5rem 0;
+      border-bottom: 1px solid rgba(71,85,105,0.4);
+    }
+    section:last-child { border-bottom: none; }
+
+    .section-number {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(59,130,246,0.12);
+      padding: 0.2rem 0.7rem;
+      border-radius: 9999px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #f1f5f9;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin: 2rem 0 0.75rem;
+    }
+
+    p { margin-bottom: 1rem; color: var(--text-muted); }
+    p strong, li strong { color: var(--text); }
+
+    ul, ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1.25rem;
+      color: var(--text-muted);
+    }
+    li { margin-bottom: 0.4rem; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .card h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .card p:last-child { margin-bottom: 0; }
+
+    /* ── Code blocks ── */
+    pre {
+      background: #0d1117;
+      border: 1px solid var(--surface2);
+      border-radius: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #c9d1d9;
+      margin-bottom: 1.25rem;
+    }
+    code {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.88em;
+      background: rgba(59,130,246,0.1);
+      color: var(--cyan);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+    }
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+
+    .kw  { color: #ff7b72; }
+    .fn  { color: #d2a8ff; }
+    .str { color: #a5d6ff; }
+    .cm  { color: #8b949e; font-style: italic; }
+    .num { color: #79c0ff; }
+    .var { color: #ffa657; }
+
+    /* ── Tables ── */
+    .table-wrap {
+      overflow-x: auto;
+      margin-bottom: 1.25rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    thead { background: var(--surface2); }
+    th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.7rem 1rem;
+      border-top: 1px solid rgba(71,85,105,0.35);
+      color: var(--text-muted);
+    }
+    tr:hover td { background: rgba(59,130,246,0.04); }
+
+    /* ── Flow diagram ── */
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+    .flow-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.65rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .flow-arrow {
+      color: var(--accent);
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    /* ── Color swatches ── */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+      margin: 1rem 0 1.25rem;
+    }
+    .color-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.65rem 1rem;
+      font-size: 0.85rem;
+    }
+    .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .color-label { color: var(--text); font-weight: 500; }
+    .color-desc { color: var(--text-muted); font-size: 0.8rem; }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 0.25rem;
+    }
+
+    /* ── File tree ── */
+    .file-tree {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      background: #0d1117;
+      border: 1px solid var(--surface2);
+      border-radius: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      color: #8b949e;
+      margin-bottom: 1.25rem;
+    }
+    .file-tree .dir { color: var(--accent); }
+    .file-tree .file { color: #c9d1d9; }
+    .file-tree .comment { color: #6e7681; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.8rem; }
+      h2 { font-size: 1.4rem; }
+      .flow { flex-direction: column; align-items: flex-start; }
+      .flow-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════ HERO ════════════════════ -->
+<header class="hero">
+  <h1>Automated Queue Monitoring System</h1>
+  <p>AI-powered computer vision system that detects, tracks, and counts people in queues, filters out passers-by using temporal analysis, estimates wait times, and streams results to a real-time web dashboard.</p>
+</header>
+
+<div class="container">
+
+<!-- ════════════════════ 1. OVERVIEW ════════════════════ -->
+<section>
+  <span class="section-number">Section 1</span>
+  <h2>Project Overview</h2>
+  <p>This project solves the problem of <strong>manually monitoring queues</strong> in places like banks, airports, hospitals, and retail stores. Instead of relying on human observation, the system uses a camera feed and artificial intelligence to automatically count how many people are standing in line, ignore people who are just walking past, and predict how long each person will need to wait.</p>
+
+  <h3>Key Capabilities</h3>
+  <ul>
+    <li><strong>Person Detection</strong> — Uses YOLOv8 to identify every person in each video frame</li>
+    <li><strong>Persistent Tracking</strong> — Assigns a unique ID to each person and follows them across frames</li>
+    <li><strong>ROI Filtering</strong> — Only counts people inside a user-defined queue area</li>
+    <li><strong>Temporal Filtering (3-second rule)</strong> — Eliminates false positives from passers-by</li>
+    <li><strong>Wait Time Estimation</strong> — Predicts remaining wait time per person</li>
+    <li><strong>Real-Time Web Dashboard</strong> — Live video feed + count + avg wait time in a browser</li>
+    <li><strong>Baseline Comparisons</strong> — Academic evaluation against two alternative methods</li>
+  </ul>
+
+  <h3>End-to-End Data Flow</h3>
+  <div class="flow">
+    <span class="flow-step">Video Frame</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">CLAHE Preprocessing</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">YOLOv8 Detection</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">Centroid Tracking</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">ROI Check</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">3s Temporal Filter</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">Wait Time Estimation</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">Web Dashboard</span>
+  </div>
+</section>
+
+<!-- ════════════════════ 2. TECH STACK ════════════════════ -->
+<section>
+  <span class="section-number">Section 2</span>
+  <h2>Technology Stack</h2>
+  <p>Every library, framework, and tool used in the project, along with its specific role.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Technology</th><th>Category</th><th>Purpose in This Project</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Python 3</strong></td><td>Language</td><td>Primary programming language for the entire system</td></tr>
+        <tr><td><strong>YOLOv8 (Ultralytics)</strong></td><td>Object Detection</td><td>Detects "person" class in video frames using the nano variant (yolov8n)</td></tr>
+        <tr><td><strong>PyTorch</strong></td><td>Deep Learning</td><td>Backend engine that YOLOv8 runs on; provides GPU acceleration via CUDA</td></tr>
+        <tr><td><strong>OpenCV (cv2)</strong></td><td>Computer Vision</td><td>Video capture, image processing (CLAHE), drawing overlays, ROI selection popup, point-in-polygon test</td></tr>
+        <tr><td><strong>NumPy</strong></td><td>Numerical Computing</td><td>Array operations, distance matrix computation, polygon coordinate handling</td></tr>
+        <tr><td><strong>Flask</strong></td><td>Web Framework</td><td>Serves the real-time web dashboard, handles HTTP routes and SSE streaming</td></tr>
+        <tr><td><strong>Pandas</strong></td><td>Data Analysis</td><td>Stores predictions and ground truth as CSV files; merges data for evaluation</td></tr>
+        <tr><td><strong>Matplotlib</strong></td><td>Visualization</td><td>Generates evaluation plots — GT vs Pred, error histograms, bar charts</td></tr>
+        <tr><td><strong>DeepSORT</strong></td><td>Tracking (Baseline)</td><td>Alternative tracker using MobileNet appearance embeddings for comparison</td></tr>
+        <tr><td><strong>HTML / CSS / JS</strong></td><td>Frontend</td><td>Web dashboard with live video, real-time count display, and SSE event handling</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════ 3. YOLO ════════════════════ -->
+<section>
+  <span class="section-number">Section 3</span>
+  <h2>Object Detection — YOLOv8 Nano</h2>
+
+  <p><strong>YOLO (You Only Look Once)</strong> is a family of real-time object detection models. Unlike two-stage detectors (like Faster R-CNN) that first propose regions then classify them, YOLO is a <strong>single-stage detector</strong> — it processes the entire image in one pass, making it much faster.</p>
+
+  <h3>Why YOLOv8 Nano?</h3>
+  <div class="card">
+    <h4>Model Selection Rationale</h4>
+    <p>YOLOv8n (nano) is the smallest variant with only <strong>3.2 million parameters</strong>. It was chosen because:</p>
+    <ul>
+      <li>Runs in real-time even on CPU (no dedicated GPU required)</li>
+      <li>Pre-trained on the <strong>COCO dataset</strong> (80 object classes including "person")</li>
+      <li>Sufficient accuracy for detecting people at typical queue camera distances</li>
+      <li>Low memory footprint — suitable for deployment on edge devices</li>
+    </ul>
+  </div>
+
+  <h3>Configuration Parameters</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Parameter</th><th>Value</th><th>Explanation</th></tr></thead>
+      <tbody>
+        <tr><td><code>imgsz</code></td><td>640</td><td>Input image resized to 640&times;640 pixels before inference</td></tr>
+        <tr><td><code>conf</code></td><td>0.35</td><td>Minimum confidence threshold — detections below 35% are discarded</td></tr>
+        <tr><td><code>classes</code></td><td>[0]</td><td>Class 0 = "person" in COCO — all other 79 classes are ignored</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>How Detection Works in Code</h3>
+  <pre><code><span class="cm"># Load the pre-trained YOLOv8 nano model</span>
+<span class="var">model</span> = <span class="fn">YOLO</span>(<span class="str">"yolov8n.pt"</span>)
+
+<span class="cm"># Run inference on the preprocessed frame</span>
+<span class="var">results</span> = model.<span class="fn">predict</span>(
+    source=proc,           <span class="cm"># CLAHE-enhanced frame</span>
+    imgsz=<span class="num">640</span>,             <span class="cm"># resize to 640x640</span>
+    conf=<span class="num">0.35</span>,             <span class="cm"># confidence threshold</span>
+    classes=[<span class="num">0</span>],           <span class="cm"># detect only "person"</span>
+    device=device,         <span class="cm"># "cpu" or "cuda:0"</span>
+    verbose=<span class="kw">False</span>
+)
+
+<span class="cm"># Extract bounding boxes [x1, y1, x2, y2] for each detection</span>
+<span class="var">xyxy</span> = results[<span class="num">0</span>].boxes.xyxy.cpu().numpy()</code></pre>
+
+  <p>The output is a list of bounding box coordinates <code>[x1, y1, x2, y2]</code> for every person detected in the frame, along with a confidence score.</p>
+
+  <h3>Why Not Other Models?</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Model</th><th>Type</th><th>Why It's Less Suitable</th></tr></thead>
+      <tbody>
+        <tr><td>Faster R-CNN</td><td>Two-stage</td><td>Much slower — generates region proposals first, then classifies. Not suitable for real-time.</td></tr>
+        <tr><td>SSD</td><td>Single-stage</td><td>Lower accuracy at small scales; YOLOv8 outperforms it on the COCO benchmark.</td></tr>
+        <tr><td>YOLOv8s/m/l/x</td><td>Single-stage</td><td>Larger variants — more accurate but significantly slower on CPU. Nano is the best speed/accuracy tradeoff.</td></tr>
+        <tr><td>EfficientDet</td><td>Single-stage</td><td>Good accuracy but slower inference; less community tooling than Ultralytics.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════ 4. CLAHE ════════════════════ -->
+<section>
+  <span class="section-number">Section 4</span>
+  <h2>Image Preprocessing — CLAHE</h2>
+
+  <p><strong>CLAHE</strong> stands for <strong>Contrast Limited Adaptive Histogram Equalization</strong>. It is applied to every frame before passing it to YOLOv8 to improve detection in poor lighting conditions.</p>
+
+  <h3>Why Preprocessing Is Needed</h3>
+  <p>Real-world queue videos often suffer from uneven lighting — shadows under awnings, bright sunlight on one side, dim indoor lighting. Without preprocessing, YOLOv8 may miss people in dark areas or produce false positives in overexposed regions.</p>
+
+  <h3>Step-by-Step Process</h3>
+  <pre><code><span class="kw">def</span> <span class="fn">apply_clahe_bgr</span>(img):
+    <span class="cm"># Step 1: Convert BGR → LAB color space</span>
+    <span class="cm">#   L = Lightness, A = Green-Red, B = Blue-Yellow</span>
+    lab = cv2.<span class="fn">cvtColor</span>(img, cv2.COLOR_BGR2LAB)
+
+    <span class="cm"># Step 2: Split into individual channels</span>
+    l, a, b = cv2.<span class="fn">split</span>(lab)
+
+    <span class="cm"># Step 3: Apply CLAHE to the Lightness channel only</span>
+    <span class="cm">#   clipLimit=3.0 prevents over-amplification of noise</span>
+    <span class="cm">#   tileGridSize=(8,8) divides image into 64 local regions</span>
+    clahe = cv2.<span class="fn">createCLAHE</span>(clipLimit=<span class="num">3.0</span>, tileGridSize=(<span class="num">8</span>,<span class="num">8</span>))
+    l2 = clahe.<span class="fn">apply</span>(l)
+
+    <span class="cm"># Step 4: Merge back and convert to BGR</span>
+    merged = cv2.<span class="fn">merge</span>((l2, a, b))
+    <span class="kw">return</span> cv2.<span class="fn">cvtColor</span>(merged, cv2.COLOR_LAB2BGR)</code></pre>
+
+  <div class="card">
+    <h4>Key Design Decisions</h4>
+    <ul>
+      <li><strong>LAB color space</strong> — By working in LAB, we enhance brightness (L channel) without distorting the actual colors (A, B channels)</li>
+      <li><strong>clipLimit = 3.0</strong> — Limits contrast amplification to prevent noise from being exaggerated</li>
+      <li><strong>tileGridSize = (8, 8)</strong> — The image is divided into 64 tiles, each getting its own histogram equalization. This makes the enhancement <em>adaptive</em> — different areas get different adjustments</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ════════════════════ 5. TRACKING ════════════════════ -->
+<section>
+  <span class="section-number">Section 5</span>
+  <h2>Object Tracking — Centroid Tracker</h2>
+
+  <p><strong>Problem:</strong> YOLOv8 gives us bounding boxes per frame, but no identity. It cannot tell us whether "person A in frame 10" is the same individual as "person A in frame 11." Without tracking, we can't count unique people or measure how long someone has been in the queue.</p>
+
+  <p><strong>Solution:</strong> A custom <strong>Centroid Tracker</strong> that maintains unique IDs across frames using Euclidean distance matching.</p>
+
+  <h3>How It Works — Step by Step</h3>
+
+  <div class="card">
+    <h4>Step 1: Compute Centroids</h4>
+    <p>For each bounding box <code>[x1, y1, x2, y2]</code>, calculate the center point: <code>centroid = ((x1+x2)/2, (y1+y2)/2)</code></p>
+  </div>
+
+  <div class="card">
+    <h4>Step 2: Build Distance Matrix</h4>
+    <p>Compute the Euclidean distance between every existing tracked centroid and every newly detected centroid. This produces an N&times;M matrix where N = existing objects and M = new detections.</p>
+  </div>
+
+  <div class="card">
+    <h4>Step 3: Greedy Matching</h4>
+    <p>Sort rows by minimum distance. For each existing object, find the closest new detection. If the distance is within <code>max_distance</code> (80 pixels), they are matched — the existing object's position is updated to the new centroid.</p>
+  </div>
+
+  <div class="card">
+    <h4>Step 4: Handle Disappearances</h4>
+    <p>If an existing object isn't matched to any new detection, its <code>disappeared</code> counter increments. After <code>max_disappeared</code> (15) consecutive frames without a match, the object is deregistered — the person is assumed to have left.</p>
+  </div>
+
+  <div class="card">
+    <h4>Step 5: Register New Objects</h4>
+    <p>Any new detection not matched to an existing object is registered as a new person with a fresh unique ID.</p>
+  </div>
+
+  <h3>Key Parameters</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Parameter</th><th>Value</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>max_disappeared</code></td><td>15 frames</td><td>Number of consecutive frames a person can be undetected before removal</td></tr>
+        <tr><td><code>max_distance</code></td><td>80 pixels</td><td>Maximum centroid movement between frames to be considered the same person</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <pre><code><span class="cm"># Distance computation (Euclidean)</span>
+<span class="kw">for</span> i, existing_centroid <span class="kw">in</span> <span class="fn">enumerate</span>(existing_centroids):
+    <span class="kw">for</span> j, new_centroid <span class="kw">in</span> <span class="fn">enumerate</span>(new_centroids):
+        D[i, j] = math.<span class="fn">hypot</span>(
+            existing_centroid[<span class="num">0</span>] - new_centroid[<span class="num">0</span>],
+            existing_centroid[<span class="num">1</span>] - new_centroid[<span class="num">1</span>]
+        )</code></pre>
+</section>
+
+<!-- ════════════════════ 6. ROI ════════════════════ -->
+<section>
+  <span class="section-number">Section 6</span>
+  <h2>Region of Interest (ROI)</h2>
+
+  <p>Not every person visible in the camera is standing in the queue. The <strong>ROI</strong> is a user-defined polygon that marks the exact area where the queue exists. Only people whose centroid falls inside this polygon are considered for counting.</p>
+
+  <h3>Interactive ROI Selection</h3>
+  <p>When the system runs for the first time, an OpenCV popup window appears showing a frame from the video. The user clicks to place polygon vertices around the queue area. The coordinates are saved to <code>roi_points.json</code> and automatically reloaded on subsequent runs.</p>
+
+  <div class="card">
+    <h4>Controls</h4>
+    <ul>
+      <li><strong>Left Click</strong> — Add a polygon vertex (numbered on screen)</li>
+      <li><strong>D key</strong> — Undo the last placed vertex</li>
+      <li><strong>Enter / Q</strong> — Finish selection and save</li>
+    </ul>
+  </div>
+
+  <h3>Point-in-Polygon Test</h3>
+  <pre><code><span class="kw">def</span> <span class="fn">inside_roi</span>(x, y, polygon):
+    <span class="cm"># Returns True if point (x,y) is inside the polygon</span>
+    <span class="cm"># Uses OpenCV's pointPolygonTest — returns &ge;0 if inside or on edge</span>
+    <span class="kw">return</span> cv2.<span class="fn">pointPolygonTest</span>(polygon, (<span class="fn">int</span>(x), <span class="fn">int</span>(y)), <span class="kw">False</span>) >= <span class="num">0</span></code></pre>
+  <p>This function is called for every tracked person on every processed frame. Only centroids that return <code>True</code> contribute to the queue count.</p>
+</section>
+
+<!-- ════════════════════ 7. TEMPORAL FILTER ════════════════════ -->
+<section>
+  <span class="section-number">Section 7</span>
+  <h2>Temporal Filtering — The 3-Second Rule</h2>
+
+  <p>This is the <strong>core innovation</strong> of the proposed method. A person is only counted as "in queue" if they remain continuously inside the ROI for at least <strong>3 consecutive seconds</strong>.</p>
+
+  <h3>Why This Matters</h3>
+  <p>Without temporal filtering, someone walking past the queue who briefly enters the ROI would be counted as a queue member. The 3-second rule eliminates these <strong>false positives</strong> because a passer-by will typically cross the ROI in under 2 seconds.</p>
+
+  <h3>How the Frame Threshold Is Calculated</h3>
+  <pre><code><span class="cm"># Video FPS ≈ 60, SKIP_FRAMES = 4</span>
+<span class="cm"># We process every 4th frame → 15 processed frames per second</span>
+<span class="cm"># 3 seconds × 60 FPS ÷ 4 skip = 45 processed frames needed</span>
+
+<span class="var">frames_required</span> = <span class="fn">max</span>(<span class="num">1</span>, <span class="fn">int</span>(<span class="fn">ceil</span>(<span class="num">3.0</span> * fps / SKIP_FRAMES)))</code></pre>
+
+  <h3>Consecutive Sequence Check</h3>
+  <p>The system doesn't just count total appearances — it checks for an <strong>unbroken consecutive sequence</strong>. If a person is detected in the ROI on frames 10, 11, 12, 13, ... 54, 55 (45 consecutive processed frames), they become "confirmed."</p>
+
+  <pre><code><span class="cm"># Check if the last N entries in the deque are consecutive</span>
+seq_len = <span class="num">1</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(dq) - <span class="num">1</span>, <span class="num">0</span>, -<span class="num">1</span>):
+    <span class="kw">if</span> dq[i] - dq[i-<span class="num">1</span>] <= <span class="num">1</span>:
+        seq_len += <span class="num">1</span>
+    <span class="kw">else</span>:
+        <span class="kw">break</span>
+
+<span class="kw">if</span> seq_len >= frames_required:
+    ids_confirmed.<span class="fn">add</span>(oid)  <span class="cm"># Person is now counted</span></code></pre>
+
+  <div class="card">
+    <h4>Visual Indicator</h4>
+    <ul>
+      <li><strong style="color: #f87171;">Red bounding box</strong> — Person detected but NOT yet confirmed (under observation)</li>
+      <li><strong style="color: #34d399;">Green bounding box</strong> — Person confirmed (passed the 3-second rule, counted in queue)</li>
+    </ul>
+    <p>The "In Queue" count shown on screen only includes green (confirmed) individuals currently inside the ROI.</p>
+  </div>
+</section>
+
+<!-- ════════════════════ 8. FRAME SKIPPING ════════════════════ -->
+<section>
+  <span class="section-number">Section 8</span>
+  <h2>Frame Skipping — Performance Optimization</h2>
+
+  <p>The video runs at approximately <strong>60 FPS</strong>, but running YOLOv8 inference on every single frame would be computationally expensive, especially on CPU. Since people in a queue move slowly, processing every 4th frame is sufficient.</p>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-value">60</div>
+      <div class="stat-label">Video FPS</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">4</div>
+      <div class="stat-label">Skip Frames</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">15</div>
+      <div class="stat-label">Processed FPS</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">75%</div>
+      <div class="stat-label">Compute Saved</div>
+    </div>
+  </div>
+
+  <pre><code><span class="cm"># Only process every 4th frame</span>
+<span class="kw">if</span> frame_idx % SKIP_FRAMES != <span class="num">0</span>:
+    <span class="kw">continue</span>  <span class="cm"># skip this frame entirely</span></code></pre>
+</section>
+
+<!-- ════════════════════ 9. WAIT TIME ════════════════════ -->
+<section>
+  <span class="section-number">Section 9</span>
+  <h2>Wait Time Estimation</h2>
+
+  <p>The system predicts how much longer each person in the queue will need to wait. This is based on observing how long previous people spent in the queue before leaving.</p>
+
+  <h3>Algorithm</h3>
+
+  <div class="card">
+    <h4>Step 1: Track Entry Times</h4>
+    <p>When a confirmed person first appears inside the ROI, record the current video timestamp as their <code>entry_time</code>.</p>
+  </div>
+
+  <div class="card">
+    <h4>Step 2: Detect Departures</h4>
+    <p>Each frame, compare the set of confirmed IDs currently in the ROI against the previous frame's set. Any ID present before but missing now has <strong>departed</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h4>Step 3: Compute Queue Duration</h4>
+    <p>For each departed person: <code>queue_duration = departure_time - entry_time</code>. This is added to a running list of all departed durations.</p>
+  </div>
+
+  <div class="card">
+    <h4>Step 4: Average Service Time</h4>
+    <p>After at least <strong>3 departures</strong> (to avoid noisy estimates), compute: <code>avg_service_time = sum(all_durations) / count(all_durations)</code></p>
+  </div>
+
+  <div class="card">
+    <h4>Step 5: Per-Person Prediction</h4>
+    <p>For each person currently in the queue: <code>estimated_remaining = max(0, avg_service_time - time_already_spent)</code></p>
+  </div>
+
+  <pre><code><span class="cm"># Departure detection</span>
+<span class="var">departed</span> = prev_confirmed_in_roi - current_confirmed_in_roi
+<span class="kw">for</span> oid <span class="kw">in</span> departed:
+    <span class="kw">if</span> oid <span class="kw">in</span> entry_time:
+        departed_durations.<span class="fn">append</span>(current_video_time - entry_time[oid])
+
+<span class="cm"># Average (only after 3+ departures)</span>
+<span class="kw">if</span> <span class="fn">len</span>(departed_durations) >= <span class="num">3</span>:
+    avg_service = <span class="fn">sum</span>(departed_durations) / <span class="fn">len</span>(departed_durations)
+
+<span class="cm"># Per-person estimate</span>
+remaining = <span class="fn">max</span>(<span class="num">0</span>, avg_service - elapsed)</code></pre>
+
+  <p>The estimated wait is shown as <code>~Xm Ys</code> below each person's bounding box on the video, and the average is displayed on the web dashboard.</p>
+</section>
+
+<!-- ════════════════════ 10. VISUALIZATION ════════════════════ -->
+<section>
+  <span class="section-number">Section 10</span>
+  <h2>On-Frame Visualization</h2>
+
+  <p>Each processed frame is annotated with visual overlays before being displayed or saved.</p>
+
+  <div class="color-grid">
+    <div class="color-item">
+      <div class="color-swatch" style="background: #34d399;"></div>
+      <div>
+        <div class="color-label">Green Box</div>
+        <div class="color-desc">Confirmed person (passed 3s rule)</div>
+      </div>
+    </div>
+    <div class="color-item">
+      <div class="color-swatch" style="background: #f87171;"></div>
+      <div>
+        <div class="color-label">Red Box</div>
+        <div class="color-desc">Unconfirmed person (still observing)</div>
+      </div>
+    </div>
+    <div class="color-item">
+      <div class="color-swatch" style="background: #fbbf24;"></div>
+      <div>
+        <div class="color-label">Yellow Polygon</div>
+        <div class="color-desc">ROI boundary</div>
+      </div>
+    </div>
+    <div class="color-item">
+      <div class="color-swatch" style="background: #06b6d4;"></div>
+      <div>
+        <div class="color-label">Cyan Text</div>
+        <div class="color-desc">"In Queue: X" count</div>
+      </div>
+    </div>
+    <div class="color-item">
+      <div class="color-swatch" style="background: #e2e8f0;"></div>
+      <div>
+        <div class="color-label">White Text</div>
+        <div class="color-desc">Per-person wait estimate (~Xm Ys)</div>
+      </div>
+    </div>
+    <div class="color-item">
+      <div class="color-swatch" style="background: #94a3b8;"></div>
+      <div>
+        <div class="color-label">Gray Text</div>
+        <div class="color-desc">"Avg Wait: Xm Ys" overlay</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ 11. WEB INTERFACE ════════════════════ -->
+<section>
+  <span class="section-number">Section 11</span>
+  <h2>Real-Time Web Interface</h2>
+
+  <p>The web dashboard allows monitoring the queue from any browser on the local network, without needing to run OpenCV windows.</p>
+
+  <h3>Architecture</h3>
+
+  <div class="card">
+    <h4>Backend — Flask + Threading</h4>
+    <ul>
+      <li>The detection pipeline runs in a <strong>background daemon thread</strong>, independent of Flask's request handling</li>
+      <li>Two shared resources protected by <strong>thread locks</strong>:
+        <ul>
+          <li><code>_state</code> — dictionary with count, avg_wait, status (guarded by <code>_state_lock</code>)</li>
+          <li><code>_latest_frame</code> — the most recent annotated frame (guarded by <code>_frame_lock</code>)</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <h3>HTTP Endpoints</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Endpoint</th><th>Method</th><th>Function</th></tr></thead>
+      <tbody>
+        <tr><td><code>GET /</code></td><td>GET</td><td>Serves the HTML dashboard page</td></tr>
+        <tr><td><code>POST /start</code></td><td>POST</td><td>Launches the detection thread; returns error if already running</td></tr>
+        <tr><td><code>GET /video_feed</code></td><td>GET</td><td>MJPEG stream — continuously sends JPEG frames as multipart HTTP response</td></tr>
+        <tr><td><code>GET /stream</code></td><td>GET</td><td>Server-Sent Events — pushes JSON updates (count, avg_wait, status) every 300ms</td></tr>
+        <tr><td><code>GET /status</code></td><td>GET</td><td>Returns current state as JSON (for polling)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>MJPEG Video Streaming</h3>
+  <p>The <code>/video_feed</code> endpoint uses the <strong>MJPEG (Motion JPEG)</strong> protocol. Each annotated frame is encoded as a JPEG image and sent as part of a continuous multipart HTTP response. The browser's <code>&lt;img&gt;</code> tag with this URL auto-refreshes to show each new frame — no JavaScript needed for the video itself.</p>
+
+  <pre><code><span class="cm"># MJPEG stream generator</span>
+<span class="kw">def</span> <span class="fn">generate</span>():
+    <span class="kw">while</span> <span class="kw">True</span>:
+        <span class="kw">with</span> _frame_lock:
+            frame = _latest_frame
+        <span class="kw">if</span> frame <span class="kw">is not</span> <span class="kw">None</span>:
+            _, buf = cv2.<span class="fn">imencode</span>(<span class="str">".jpg"</span>, frame, [cv2.IMWRITE_JPEG_QUALITY, <span class="num">70</span>])
+            <span class="kw">yield</span> (b<span class="str">"--frame\r\n"</span>
+                   b<span class="str">"Content-Type: image/jpeg\r\n\r\n"</span> + buf.<span class="fn">tobytes</span>() + b<span class="str">"\r\n"</span>)
+        time.<span class="fn">sleep</span>(<span class="num">0.05</span>)</code></pre>
+
+  <h3>Server-Sent Events (SSE)</h3>
+  <p>SSE is a lightweight one-way communication channel from server to browser. Unlike WebSockets, it uses standard HTTP and is simpler to implement. The browser connects once via <code>EventSource</code>, and the server pushes data whenever it changes.</p>
+
+  <pre><code><span class="cm">// Browser-side JavaScript</span>
+<span class="kw">const</span> <span class="var">evtSource</span> = <span class="kw">new</span> <span class="fn">EventSource</span>(<span class="str">'/stream'</span>);
+evtSource.<span class="var">onmessage</span> = <span class="kw">function</span>(event) {
+    <span class="kw">const</span> <span class="var">d</span> = JSON.<span class="fn">parse</span>(event.data);
+    <span class="cm">// d.count, d.avg_wait, d.status are now available</span>
+    <span class="fn">updateUI</span>(d);
+};</code></pre>
+
+  <h3>Frame-Rate Throttling</h3>
+  <p>Without throttling, the detection loop would process frames as fast as possible, making the video appear to play at 5-10x speed. A <code>time.sleep()</code> at the end of each iteration ensures real-time playback:</p>
+  <pre><code><span class="var">target_delay</span> = SKIP_FRAMES / fps  <span class="cm"># 4/60 ≈ 0.067 seconds</span>
+<span class="var">elapsed</span> = time.<span class="fn">time</span>() - loop_start
+<span class="kw">if</span> target_delay - elapsed > <span class="num">0</span>:
+    time.<span class="fn">sleep</span>(target_delay - elapsed)</code></pre>
+</section>
+
+<!-- ════════════════════ 12. BASELINES ════════════════════ -->
+<section>
+  <span class="section-number">Section 12</span>
+  <h2>Baseline Comparisons</h2>
+
+  <p>To scientifically validate the proposed method, two baseline approaches are implemented and compared.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Method</th><th>Detection</th><th>Tracking</th><th>Temporal Filter</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Proposed</strong></td>
+          <td>YOLOv8n</td>
+          <td>Centroid Tracker</td>
+          <td>3 seconds</td>
+          <td>The main method being evaluated</td>
+        </tr>
+        <tr>
+          <td><strong>Baseline 1</strong></td>
+          <td>YOLOv8n</td>
+          <td>Centroid Tracker</td>
+          <td>None</td>
+          <td>Proves temporal filtering reduces false positives</td>
+        </tr>
+        <tr>
+          <td><strong>Baseline 2</strong></td>
+          <td>YOLOv8n</td>
+          <td>DeepSORT</td>
+          <td>3 seconds</td>
+          <td>Proves centroid tracker is competitive with a heavier tracker</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>DeepSORT — How It Differs</h3>
+  <p><strong>DeepSORT</strong> (Deep Simple Online and Realtime Tracking) uses a <strong>MobileNet CNN</strong> to extract visual appearance features from each detected person. It then combines:</p>
+  <ul>
+    <li><strong>Appearance similarity</strong> (cosine distance between CNN embeddings) — recognizes people by how they look</li>
+    <li><strong>Motion prediction</strong> (Kalman filter) — predicts where a person will be in the next frame</li>
+    <li><strong>Hungarian algorithm</strong> — optimal assignment of detections to tracks</li>
+  </ul>
+  <p>While more robust in theory, DeepSORT is significantly more computationally expensive due to the CNN embedding extraction. For queue monitoring where people move slowly and occlusion is limited, the simpler centroid tracker performs comparably.</p>
+</section>
+
+<!-- ════════════════════ 13. EVALUATION ════════════════════ -->
+<section>
+  <span class="section-number">Section 13</span>
+  <h2>Evaluation Metrics</h2>
+
+  <p>The system is evaluated against manually annotated <strong>ground truth</strong> data. A human reviewer counts the actual number of people in each saved frame, and these counts are compared to the model's predictions.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Metric</th><th>Formula</th><th>What It Measures</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>MAE</strong></td>
+          <td><code>mean(|GT - Pred|)</code></td>
+          <td>Average absolute error per frame — how far off the count is on average</td>
+        </tr>
+        <tr>
+          <td><strong>RMSE</strong></td>
+          <td><code>sqrt(mean((GT - Pred)&sup2;))</code></td>
+          <td>Same as MAE but penalizes large errors more heavily</td>
+        </tr>
+        <tr>
+          <td><strong>Precision</strong></td>
+          <td><code>TP / (TP + FP)</code></td>
+          <td>Of all people the model counted, what fraction actually existed</td>
+        </tr>
+        <tr>
+          <td><strong>Recall</strong></td>
+          <td><code>TP / (TP + FN)</code></td>
+          <td>Of all real people, what fraction did the model detect</td>
+        </tr>
+        <tr>
+          <td><strong>F1 Score</strong></td>
+          <td><code>2 &times; P &times; R / (P + R)</code></td>
+          <td>Harmonic mean of precision and recall — balanced measure</td>
+        </tr>
+        <tr>
+          <td><strong>Queue Accuracy</strong></td>
+          <td><code>1 - (total_error / total_GT)</code></td>
+          <td>Overall accuracy as a percentage — the headline metric</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Reported Results</h3>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--green);">69.39%</div>
+      <div class="stat-label">Proposed Method</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color: var(--accent);">66.33%</div>
+      <div class="stat-label">DeepSORT Baseline</div>
+    </div>
+  </div>
+  <p>The proposed method (Centroid Tracker + 3s Temporal Filter) outperforms the DeepSORT baseline while being significantly lighter and faster.</p>
+</section>
+
+<!-- ════════════════════ 14. FILE STRUCTURE ════════════════════ -->
+<section>
+  <span class="section-number">Section 14</span>
+  <h2>Project File Structure</h2>
+
+  <div class="file-tree">
+<span class="dir">Major project/</span>
+├── <span class="file">queue.mp4</span>                            <span class="comment"># Input video file</span>
+├── <span class="file">yolov8n.pt</span>                           <span class="comment"># YOLOv8 nano model weights (pre-trained)</span>
+├── <span class="file">roi_points.json</span>                      <span class="comment"># Saved ROI polygon coordinates</span>
+├── <span class="file">ground_truth.csv</span>                     <span class="comment"># Human-annotated frame counts</span>
+│
+├── <span class="file">queue_monitor.py</span>                     <span class="comment"># Main project — all 3 methods + evaluation</span>
+├── <span class="file">queue_monitor_simple.py</span>              <span class="comment"># Simplified version (same accuracy, fewer lines)</span>
+├── <span class="file">queue_monitor_notebook.ipynb</span>         <span class="comment"># Jupyter notebook version</span>
+│
+├── <span class="file">predictions_per_processed_frame.csv</span>  <span class="comment"># Proposed method predictions</span>
+├── <span class="file">predictions_no_temporal.csv</span>          <span class="comment"># Baseline 1 predictions</span>
+├── <span class="file">predictions_deepsort.csv</span>             <span class="comment"># Baseline 2 predictions</span>
+│
+├── <span class="dir">processed_frames/</span>                    <span class="comment"># Saved annotated frames (proposed)</span>
+├── <span class="dir">baseline_no_temporal/</span>                <span class="comment"># Saved frames (baseline 1)</span>
+├── <span class="dir">baseline_deepsort/</span>                   <span class="comment"># Saved frames (baseline 2)</span>
+├── <span class="dir">evaluation_outputs/</span>                  <span class="comment"># Metric plots and summaries</span>
+├── <span class="dir">comparison_outputs/</span>                  <span class="comment"># Method comparison charts</span>
+│
+├── <span class="dir">web_queue_test/</span>                      <span class="comment"># Real-time web dashboard</span>
+│   ├── <span class="file">app.py</span>                           <span class="comment"># Flask server + detection + SSE + MJPEG</span>
+│   ├── <span class="file">requirements.txt</span>                 <span class="comment"># Python dependencies</span>
+│   └── <span class="dir">templates/</span>
+│       └── <span class="file">index.html</span>                   <span class="comment"># Dashboard UI</span>
+│
+└── <span class="file">PROJECT_DOCUMENTATION.md</span>             <span class="comment"># Project documentation</span>
+  </div>
+</section>
+
+<!-- ════════════════════ 15. HOW TO RUN ════════════════════ -->
+<section>
+  <span class="section-number">Section 15</span>
+  <h2>How to Run</h2>
+
+  <h3>Install Dependencies</h3>
+  <pre><code>pip3 install ultralytics torch torchvision opencv-python numpy pandas matplotlib flask deep-sort-realtime</code></pre>
+
+  <h3>Main Project (CLI)</h3>
+  <pre><code><span class="cm"># Run the proposed method</span>
+python3 queue_monitor.py --run_pipeline
+
+<span class="cm"># Run all 3 methods and compare</span>
+python3 queue_monitor.py --compare
+
+<span class="cm"># Create ground truth annotations</span>
+python3 queue_monitor.py --create_gt
+
+<span class="cm"># Evaluate against ground truth</span>
+python3 queue_monitor.py --evaluate</code></pre>
+
+  <h3>Web Dashboard</h3>
+  <pre><code><span class="cm"># Start the Flask server</span>
+cd web_queue_test
+python3 app.py
+
+<span class="cm"># Open in browser</span>
+<span class="cm"># http://127.0.0.1:5000</span>
+<span class="cm"># Click "Start Detection" to begin</span></code></pre>
+</section>
+
+<!-- ════════════════════ 16. FUTURE ════════════════════ -->
+<section>
+  <span class="section-number">Section 16</span>
+  <h2>Future Scope</h2>
+
+  <ul>
+    <li><strong>Live CCTV Integration</strong> — Replace video file input with a live RTSP camera stream for real-world deployment</li>
+    <li><strong>Multi-Queue Support</strong> — Define multiple ROI polygons to monitor several queues simultaneously</li>
+    <li><strong>Alert System</strong> — Send notifications when queue length exceeds a configurable threshold</li>
+    <li><strong>Cloud Deployment</strong> — Host the web dashboard on a cloud server for remote monitoring</li>
+    <li><strong>Historical Analytics</strong> — Store counts over time and generate reports on peak hours, average wait trends</li>
+    <li><strong>GPU Acceleration</strong> — Use CUDA-enabled GPU for faster inference, enabling processing of higher resolution video</li>
+  </ul>
+</section>
+
+</div>
+
+<footer>
+  Automated Queue Monitoring System &mdash; Major Project
+</footer>
+
+</body>
+</html>
